@@ -1,0 +1,23 @@
+{
+    "name": "yutin1987/phalpro",
+    "type": "library",
+    "description": "MVC Library for Phalcon",
+    "keywords": ["framework", "phalcon", "mvc", "library"],
+    "license": "BSD-3",
+    "authors": [
+        {
+            "name": "YuTin",
+            "email": "yuting1987@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.6",
+        "ext-phalcon": ">=1.2.4,<2",
+        "justinrainbow/json-schema": "1.4.x-dev"
+    },
+    "autoload": {
+        "psr-0": {
+            "Phalpro": "src/"
+        }
+    }
+}
