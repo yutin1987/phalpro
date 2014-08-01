@@ -1,0 +1,68 @@
+{
+	"title": "Shipment",
+	"type": "object",
+	"definitions": {
+		"order": {
+		    "type": "object",
+		    "properties": {
+		        "number": {
+		        	"type": "string"
+		        },
+		        "freight": {
+		        	"type": "string"
+		        },
+		        "date": {
+		        	"type": "string"
+		        }
+		    },
+			"required": ["number","date"]
+		},
+		"contactor": {
+		    "type": "object",
+		    "properties": {
+				"name": {
+					"type": "string"
+				},
+				"address": {
+					"type": "string"
+				},
+				"phone": {
+					"type": "string"
+				}
+			},
+			"required": ["name","address","phone"]
+		}
+	},
+	"properties": {
+		"shopId": {
+			"type": "integer"
+		},
+		"serviceType": {
+			"type": "string",
+			"enum": ["1", "2", "3"]
+		},
+		"direction": {
+			"type": "string",
+			"enum": ["out", "return"]
+		},
+		"order": {
+			"$ref": "schema.json#/definitions/order"
+		},
+		"price": {
+			"type": "integer"
+		},
+		"payment": {
+			"type": "integer"
+		},
+		"from": {
+			"$ref": "schema.json#/definitions/contactor"
+		},
+		"to": {
+			"$ref": "schema.json#/definitions/contactor"
+		},
+		"callback": {
+			"type": "string"
+		}
+	},
+	"required": ["shopId", "serviceType", "order", "from", "to"]
+}

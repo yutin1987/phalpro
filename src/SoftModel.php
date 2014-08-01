@@ -2,11 +2,14 @@
 
 namespace Phalpro;
 
-use Phalcon\Mvc\Model\Behavior\SoftDelete,
-    Phalcon\Mvc\Model\MetaData,
-    Phalcon\Mvc\Model,
-    Phalcon\Db\Column;
+use Phalcon\Mvc\Model\Behavior\SoftDelete;
+use Phalcon\Mvc\Model\MetaData;
+use Phalcon\Mvc\Model;
+use Phalcon\Db\Column;
 
+/**
+ * 
+ */
 class SoftModel extends Model
 {
 
