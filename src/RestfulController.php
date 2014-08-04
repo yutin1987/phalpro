@@ -3,9 +3,7 @@ namespace Phalpro;
 
 use \Phalcon\Mvc\Controller;
 
-use JsonSchema\Uri\UriRetriever;
-use JsonSchema\RefResolver;
-
+use Validator;
 use Page;
 
 /**
@@ -33,15 +31,30 @@ class RestfulController extends Controller
     const HTTP_SERVER_ERROR_INTERNAL    = "500";
     const HTTP_SERVER_ERROR_UNAVAILABLE = "503";
 
+    public static $headerAry = [
+        200 => "OK",
+        201 => "Created",
+        202 => "Accepted",
+        400 => "Bad Request",
+        401 => "Unauthorized",
+        403 => "Forbidden",
+        404 => "Forbidden",
+        500 => "Internal Server Error"
+    ];
+
     protected $methods = [
         'GET', 'POST', 'DELETE', 'PUT', 'PATCH', 'OPTIONS'
     ];
 
     protected $rawBody = null;
 
+    protected $validatorDir = '';
+
     protected $errorMessage = array();
 
     protected $contentType = 'json';
+
+    protected $viewer;
 
     /**
      * Before Execute Route
@@ -62,6 +75,8 @@ class RestfulController extends Controller
             "Content-Type, APPKEY, AUTHORIZATION"
         );
         
+        
+
         $this->setMethods();
     }
 
@@ -77,37 +92,104 @@ class RestfulController extends Controller
      *
      * @return void
      */
-    protected function setMethods($methods)
+    protected function setMethods($methods = null)
     {
-        $this->methods = $methods;
+        if (!empty($methods)) {
+            $this->methods = $methods;
+        }
+
         $this->response->setHeader(
             "Access-Control-Allow-Methods",
-            implode(",", $methods)
+            implode(",", $this->methods)
         );
+    }
+
+    /**
+     * 設定contentType
+     * 
+     * @param string $type 內容格式
+     *
+     * @return void
+     */
+    protected function setContentType($type = null)
+    {
+        if (empty($type)) {
+            $this->contentType = 'json';
+        }
+
+        if ($this->contentType == 'xml') {
+            $this->response->setContentType("application/xml", "UTF-8");
+        } elseif ($this->contentType == 'html') {
+            $this->response->setContentType("text/html", "UTF-8");
+        } else {
+            $this->response->setContentType("application/json", "UTF-8");
+        }
+    }
+
+    /**
+     * 設定viewer
+     * 
+     * @param string $temp 樣板檔
+     *
+     * @return void
+     */
+    protected function setViewer($temp)
+    {
+        $this->viewer = $temp;
     }
 
     /**
      * Response Success
      * 
      * @param array   $data     data
-     * @param string  $type     format type
      * @param integer $httpCode http status code
      * 
      * @return void
      */
-    protected function resSuccess($data = null, $type = 'json', $httpCode = 200)
+    protected function resSuccess($data = null, $httpCode = 200)
     {
-        if ($type == 'josn' || empty($json)) {
-            $this->response->setContentType("application/json", "UTF-8");
-            $this->response->setJsonContent($data);
-        } elseif ($type == 'xml') {
-            $this->response->setContentType("application/xml", "UTF-8");
+        if ($this->contentType == 'xml') {
+            $xmlObj = new SimpleXMLElement(
+                '<?xml version="1.0" encoding="UTF-8" ?>'
+            );
+
+            foreach ($data as $key => $value) {
+                if (is_array($value)) {
+                    if (!is_numeric($key)) {
+                        $subnode = $xmlObj->addChild($key);
+                        self::array2xml($value, $subnode);
+                    } else {
+                        self::array2xml($value, $xmlObj);
+                    }
+                } else {
+                    $xmlObj->addChild($key, $value);
+                }
+            }
+
+            $this->response->setContent(
+                $xmlObj->asXML()
+            );
+        } elseif ($this->contentType == 'html') {
+            $this->response->setContent(
+                $this->view->render($this->viewer, $data)
+            );
         } else {
-            $this->response->setContentType("text/html", "UTF-8");
-            $this->response->setContent($this->view->render($type, $data));
-        }
-        
-        $this->response->setStatusCode($httpCode, "OK");
+            $this->response->setJsonContent($data);
+        }//end if
+
+        $this->response->setStatusCode($httpCode);
+    }
+
+    /**
+     * 設定validator目錄
+     * 
+     * @param string $path 目錄
+     *
+     * @return void
+     */
+    protected function setValidatorDir($path)
+    {
+        $this->validatorDir = $path;
     }
 
     /**
@@ -120,28 +202,18 @@ class RestfulController extends Controller
      */
     protected function validate($data, $schema)
     {
-        $schema = realpath($schema);
+        $validator = new Validator($this->validatorDir);
+        
+        $report = $validator->validate($data, $schema);
 
-        $retriever = new JsonSchema\Uri\UriRetriever;
-        $schema    = $retriever->retrieve('file://' . $schema);
+        if ($validator->getMessage()) {
+            array_push(
+                $this->errorMessage,
+                $validator->getMessage()
+            );
+        };
 
-        $refResolver = new JsonSchema\RefResolver($retriever);
-        $refResolver->resolve($schema, 'file://' . dirname($schema));
-
-        $validator = new JsonSchema\Validator();
-        $validator->check($data, $schema);
-
-        if ($validator->isValid()) {
-            return $data;
-        } else {
-            foreach ($validator->getErrors() as $error) {
-                array_push(
-                    $this->errorMessage,
-                    sprintf("[%s] %s\n", $error['property'], $error['message'])
-                );
-            };
-            return false;
-        }
+        return $report;
     }
 
     /**

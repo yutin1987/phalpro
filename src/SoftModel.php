@@ -1,5 +1,4 @@
 <?php
-
 namespace Phalpro;
 
 use Phalcon\Mvc\Model\Behavior\SoftDelete;
@@ -8,16 +7,30 @@ use Phalcon\Mvc\Model;
 use Phalcon\Db\Column;
 
 /**
- * 
+ * SoftModel
+ *
+ * @category SoftModel
+ * @package  Phalpro
+ * @author   YuTin <yuting1987@gmail.com>
  */
 class SoftModel extends Model
 {
 
-    public static function getTimestamp()
+    /**
+     * 取得TimeStamp
+     * 
+     * @return datatime
+     */
+    public static function getTimeStamp()
     {
         return date("Y-m-d H:i:s", time("now"));
-    } 
+    }
     
+    /**
+     * model initialize
+     * 
+     * @return void
+     */
     public function initialize()
     {
         $this->setSoftDelete();
@@ -25,37 +38,59 @@ class SoftModel extends Model
         $this->skipAttributesOnUpdate(array('createTime'));
     }
 
-    protected function setSoftDelete() {
-
-        $this->addBehavior(new SoftDelete(
-            array(
-                'field' => 'deleteTime',
-                'value' => self::getTimestamp()
+    /**
+     * 設定SoftDelete
+     *
+     * @return void
+     */
+    protected function setSoftDelete()
+    {
+        $this->addBehavior(
+            new SoftDelete(
+                [
+                    'field' => 'deleteTime',
+                    'value' => self::getTimeStamp()
+                ]
             )
-        ));
-        
+        );
     }
 
-    protected function setSoftStatus() {
-
-        $this->addBehavior(new SoftDelete(
-            array(
-                'field' => 'status',
-                'value' => 0
+    /**
+     * 設定SoftStatus
+     * 
+     * @return void
+     */
+    protected function setSoftStatus()
+    {
+        $this->addBehavior(
+            new SoftDelete(
+                [
+                    'field' => 'status',
+                    'value' => 0
+                ]
             )
-        ));
-
+        );
     }
 
+    /**
+     * before ValidationOnCreate
+     * 
+     * @return void
+     */
     public function beforeValidationOnCreate()
     {
-        $this->updateTime = self::getTimestamp();
-        $this->createTime = self::getTimestamp();
+        $this->updateTime = self::getTimeStamp();
+        $this->createTime = self::getTimeStamp();
     }
 
+    /**
+     * before ValidationOnUpdate
+     * 
+     * @return void
+     */
     public function beforeValidationOnUpdate()
     {
-        $this->updateTime = self::getTimestamp();
+        $this->updateTime = self::getTimeStamp();
     }
-
 }
+?>

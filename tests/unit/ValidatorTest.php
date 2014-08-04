@@ -21,7 +21,7 @@ class ValidatorTest extends Test
     }
 
     // tests
-    public function testMe()
+    public function testValidatorBase()
     {
         $validator = new Validator( __DIR__ . '/../_data/');
         
