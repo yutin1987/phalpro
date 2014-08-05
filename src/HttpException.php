@@ -14,24 +14,37 @@ use Phalcon\Http\Response as Response;
  */
 class HttpException extends PhalconException
 {
-    const HTTP_400_1 = '缺少必要欄位';
-    const HTTP_400_2 = '參數格式不合法';
+    const MISSING_REQUIRED_FIELD       = 40010;
+    const PARAMETER_FORMAT_NOT_CORRECT = 40020;
+    const APPKEY_IS_NOT_VALID          = 40110;
+    const SSO_TOKEN_IS_NOT_VALID       = 40120;
+    const ACCESS_FORBIDDEN             = 40310;
+    const OPERATION_IS_FORBIDDEN       = 40320;
+    const NOT_FOUND                    = 40400;
+    const URL_WAS_NOT_FOUND            = 40410;
+    const RESOURCE_NOT_FOUND           = 40420;
+    const UNKNOWN_ERROR                = 50000;
+    const DATA_PROCESSING_ERROR        = 50010;
+    const SERVICE_UNAVAILABLE          = 50300;
+    const OVERLOAD_SERVICE             = 50310;
 
-    const HTTP_401_1 = 'APPKEY驗證失敗';
-    const HTTP_401_2 = 'SSOToken驗證失敗';
+    protected $httpCode = 500;
 
-    const HTTP_402_1 = '拒絕訪問';
-    const HTTP_402_2 = '拒絕操作';
-
-    const HTTP_404   = '找不到對應服務';
-    const HTTP_404_1 = '資料不存在';
-
-    const HTTP_500 = '未知的錯誤';
-
-    const HTTP_500_1 = '資料庫錯誤';
-
-    const HTTP_503_2 = '請求的資料超過可負載的數量';
-    const HTTP_503_3 = '資料取得失敗';
+    public static $errorAry = [
+        40010 => '缺少必要欄位',
+        40020 => '參數格式不合法',
+        40110 => 'APPKEY驗證失敗',
+        40120 => 'SSOToken驗證失敗',
+        40310 => '拒絕訪問',
+        40320 => '拒絕操作',
+        40400 => '找不到對應服務',
+        40410 => '找不到URL資源',
+        40420 => '資料不存在',
+        50000 => '未知的錯誤',
+        50010 => '資料處理錯誤',
+        50300 => '停止服務',
+        50310 => '伺服器過載',
+    ];
 
     public static $headerAry = [
         200 => "OK",
@@ -44,56 +57,39 @@ class HttpException extends PhalconException
         500 => "Internal Server Error"
     ];
     
-    protected $httpCode = 500;
-
-    protected $exMessage = null;
-
     /**
      * Exception Init
      * 
-     * @param string  $code      錯誤代碼 HTTP_XXX_XX
-     * @param string  $exMessage 錯誤細節
-     * @param integer $httpCode  Http Status Code
+     * @param string  $message 錯誤訊息
+     * @param integer $code    錯誤代碼
+     *
+     * @return void
      */
-    public function __construct($code, $exMessage = null, $httpCode = 500)
+    public function __construct($message, $code = UNKNOWN_ERROR)
     {
         $this->code = $code;
 
-        $this->message = self::getDefinedMessage($code);
-
-        if (is_array($exMessage)) {
-            $this->exMessage = implode(", ", $exMessage);
-        } elseif (is_string($exMessage)) {
-            $this->exMessage = $exMessage;
+        if (is_array($message)) {
+            $this->message = implode(", ", $message);
+        } else {
+            $this->message = $message;
         }
     }
 
     /**
      * 取得預設Message
      *
-     * @param string $code 錯誤代碼
-     *
      * @return string
      */
-    public static function getDefinedMessage($code)
+    public function getDefinedMessage()
     {
-        $message = @constant('self::' . $code);
-
-        if (!$message) {
+        if (self::$errorAry[$this->code])) {
             $message = 'An unknown error has occurred';
+        } else {
+            $message = $errorAry[$code];
         }
 
         return $message;
-    }
-
-    /**
-     * 取得錯誤細節
-     * 
-     * @return string
-     */
-    public function getExMessage()
-    {
-        return $this->exMessage;
     }
 
     /**
@@ -103,7 +99,11 @@ class HttpException extends PhalconException
      */
     public function getHttpCode()
     {
-        return $this->httpCode;
+        if (preg_match('/^\d\d\d/', $this->code, $match)) {
+            return $match[0];
+        } else {
+            return 500;
+        }
     }
 
     /**
@@ -116,32 +116,30 @@ class HttpException extends PhalconException
     public static function handle($e)
     {
         $result = [
-            'code' => 'HTTP_500',
-            'message' => null,
-            'extMessage' => null,
+            'code' => '500',
+            'message' => 'An unknown error has occurred',
+            'detail' => null,
             'httpCode' => 500
         ];
 
         switch (get_class($e)) {
             case "Phalpro\HttpException":
-            case "Phalpro\HttpException\ClientException":
-            case "Phalpro\HttpException\ServerException":
-                $result['code']       = $e->getCode();
-                $result['extMessage'] = $e->getExMessage();
-                $result['httpCode']   = $e->getHttpCode();
+                $result['code']     = $e->getCode();
+                $result['message']  = $e->getDefinedMessage();
+                $result['detail']   = $e->getMessage();
+                $result['httpCode'] = $e->getHttpCode();
                 break;
             case "PDOException":
             case "Phalcon\Mvc\Model\Transaction\Failed":
-                $result['code']       = 'HTTP_500_1';
-                $result['extMessage'] = $e->getMessage();
+                $result['code']    = DATA_PROCESSING_ERROR;
+                $result['message'] = self::errorAry[DATA_PROCESSING_ERROR];
+                $result['detail']  = $e->getMessage();
                 break;
             default:
-                $result['code'] = 'HTTP_500';
-                
                 if (get_cfg_var("APPLICATION_ENV") == "development") {
-                    $result['extMessage'] = "{$e->getFile()}\n [{$e->getLine()}] {$e->getMessage()}";
+                    $result['detail'] = "{$e->getFile()}\n [{$e->getLine()}] {$e->getMessage()}";
                 }
-
+                
                 mail(
                     'yuting_liu@hiiir.com',
                     '[System Error]Ship未知的錯誤',
@@ -149,21 +147,6 @@ class HttpException extends PhalconException
                 );
                 break;
         }//end switch
-
-        $result['message'] = self::getDefinedMessage($result['code']);
-
-        // if ( is_dir(__DIR__ . '/../../../logs/') == FALSE ) {
-        //     mkdir(__DIR__ . '/../../../logs/');
-        // }
-        // $logDir = realpath(__DIR__ . '/../../../logs/');
-
-        // $fp = fopen( $logDir . '/' . date('Y-m-d') . '.log', "a");
-        // fwrite($fp, '[' . date('H:i:s') . '] ');
-        // fwrite($fp, get_class($e));
-        // fwrite($fp, PHP_EOL . 'message: ' . $this->message);
-        // fwrite($fp, PHP_EOL . 'exMessage: ' . $this->exMessage);
-        // fwrite($fp, PHP_EOL . PHP_EOL);
-        // fclose($fp);
 
         return $result;
     }
