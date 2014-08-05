@@ -29,8 +29,6 @@ class Validator
     public function __construct($path = null)
     {
         $this->path = $path;
-        
-        $this->validator = new JsonSchema\Validator();
     }
 
     /**
@@ -92,6 +90,45 @@ class Validator
 
         return $schemaObj;
     }
+    
+    /**
+     * 驗證Data is Required
+     * 
+     * @param object/array $data      資料
+     * @param array        $parameter 必需的參數
+     * 
+     * @return boolean
+     * @throws Exception parameter 不存在或 data 格式錯誤
+     */
+    protected function required($data, $parameter)
+    {
+        if (!is_array($parameter)) {
+            throw new Exception("parameter must be an array");
+        }
+
+        $validation = true;
+
+        if (is_array($data)) {
+            for ($i = count($data); $i >= 0; $i--) {
+                if (!$this->required($data[$i], $parameter)) {
+                    $validation = false;
+                };
+            }
+        } else {
+            for ($i = count($parameter); $i >= 0; $i--) {
+                $name = $parameter[$i];
+                if (!property_exists($data, $name) || empty($data->$name)) {
+                    if (!in_array("{$name} is required", $this->errorMessage)) {
+                        array_push($this->errorMessage, "{$name} is required");
+                    }
+
+                    $validation = false;
+                }
+            }
+        }
+
+        return $validation;
+    }
 
     /**
      * 驗證Data
@@ -105,6 +142,8 @@ class Validator
     public function validate($data, $schema)
     {
         try {
+            $validator = new JsonSchema\Validator();
+
             $dataObj   = $this->convertData($data);
             $schemaObj = $this->loadSchema($schema);
             
@@ -112,12 +151,12 @@ class Validator
                 return true;
             }
 
-            $this->validator->check($dataObj, $schemaObj);
+            $validator->check($dataObj, $schemaObj);
 
-            if ($this->validator->isValid()) {
+            if ($validator->isValid()) {
                 return true;
             } else {
-                foreach ($this->validator->getErrors() as $error) {
+                foreach ($validator->getErrors() as $error) {
                     if ($error['property']) {
                         $error['message'] = str_replace(
                             'property ',
