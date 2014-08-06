@@ -177,7 +177,7 @@ class HttpException extends PhalconException
                 'status' => 'fail',
                 'code' => $result['code'],
                 'message' => $result['message'],
-                'extMessage' => $result['extMessage']
+                'detail' => $result['detail']
             ]
         );
 
