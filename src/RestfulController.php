@@ -256,8 +256,10 @@ class RestfulController extends Controller
         if (empty($rawBody)) {
             array_push($this->errorMessage, 'Not found raw body');
             return false;
+        } elseif ($this->validate($rawBody, $schema)) {
+            return $rawBody;
         } else {
-            return $this->validate($rawBody, $schema);
+            return false;
         }
     }
 
@@ -276,7 +278,11 @@ class RestfulController extends Controller
             return false;
         } else {
             parse_str($rawBody, $data);
-            return $this->validate($data, $schema);
+            if ($this->validate($data, $schema)) {
+                return $data;
+            } else {
+                return false;
+            }
         }
     }
 
