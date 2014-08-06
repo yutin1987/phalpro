@@ -3,8 +3,8 @@ namespace Phalpro;
 
 use \Phalcon\Mvc\Controller;
 
-use Validator;
-use Page;
+use \Phalpro\Validator;
+use \Phalpro\Page;
 
 /**
  * Restful Controller
