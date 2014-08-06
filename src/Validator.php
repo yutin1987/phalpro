@@ -117,7 +117,7 @@ class Validator
                 };
             }
         } else {
-            for ($i = count($parameter); $i >= 0; $i--) {
+            for ($i = (count($parameter) - 1); $i >= 0; $i--) {
                 $name = $parameter[$i];
                 if (!property_exists($data, $name) || empty($data->$name)) {
                     if (!in_array("{$name} is required", $this->errorMessage)) {
