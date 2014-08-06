@@ -38,8 +38,9 @@ class RestfulController extends Controller
         400 => "Bad Request",
         401 => "Unauthorized",
         403 => "Forbidden",
-        404 => "Forbidden",
-        500 => "Internal Server Error"
+        404 => "Not Found",
+        500 => "Internal Server Error",
+        503 => "Service Unavailable"
     ];
 
     protected $methods = [
@@ -176,7 +177,10 @@ class RestfulController extends Controller
             $this->response->setJsonContent($data);
         }//end if
 
-        $this->response->setStatusCode($httpCode);
+        $this->response->setStatusCode(
+            $httpCode,
+            self::$headerAry[$httpCode]
+        );
     }
 
     /**
