@@ -83,10 +83,10 @@ class HttpException extends PhalconException
      */
     public function getDefinedMessage()
     {
-        if (self::$errorAry[$this->code]) {
-            $message = 'An unknown error has occurred';
-        } else {
+        if (isset(self::$errorAry[$this->code])) {
             $message = $errorAry[$code];
+        } else {
+            $message = 'An unknown error has occurred';
         }
 
         return $message;
@@ -116,7 +116,7 @@ class HttpException extends PhalconException
     public static function handle($e)
     {
         $result = [
-            'code' => '500',
+            'code' => self::UNKNOWN_ERROR,
             'message' => 'An unknown error has occurred',
             'detail' => null,
             'httpCode' => 500
