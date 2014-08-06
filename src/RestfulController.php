@@ -241,13 +241,13 @@ class RestfulController extends Controller
     }
 
     /**
-     * Get Request From RawBody For Query
+     * Get Request From RawBody For Json
      * 
      * @param string $schema json schema
      * 
      * @return mixed
      */
-    protected function getQueryRawBody($schema)
+    protected function getJsonRawBody($schema)
     {
         $rawBody = $this->request->getJsonRawBody();
         if (empty($rawBody)) {
@@ -259,13 +259,13 @@ class RestfulController extends Controller
     }
 
     /**
-     * Get Request From RawBody For Json
+     * Get Request From RawBody For Query
      * 
      * @param string $schema json schema
      * 
      * @return mixed
      */
-    protected function getJsonRawBody($schema)
+    protected function getQueryRawBody($schema)
     {
         $rawBody = $this->request->getRawBody();
         if (empty($rawBody)) {
