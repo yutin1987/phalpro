@@ -73,6 +73,48 @@ class SoftModel extends Model
     }
 
     /**
+     * 放入資料
+     * 
+     * @param mixed &$target 目標
+     * @param mixed $data    資料
+     * 
+     * @return void
+     */
+    protected function put(&$target, $data)
+    {
+        foreach ($data as $key => $value) {
+            if (!is_object($this->$key)) {
+                $target->$key = $value;
+            } elseif (is_object($value)) {
+                $this->put($target->$key, $value);
+            } else {
+                continue;
+            }
+        }
+    }
+
+    /**
+     * 大量放入資料
+     * 
+     * @param object/array $data 資料
+     * 
+     * @return void
+     * @throws Exception If data must be an object or array
+     */
+    public function putIn($data)
+    {
+        if (is_object($data)) {
+            $data = get_object_vars($data);
+        }
+
+        if (!is_array($data)) {
+            throw new Exception("data must be an object or array");
+        }
+
+        $this->put($this, $data);
+    }
+
+    /**
      * before ValidationOnCreate
      * 
      * @return void
