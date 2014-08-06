@@ -2,7 +2,9 @@
 
 namespace Phalpro;
 
-use JsonSchema;
+use \JsonSchema\Uri\UriRetriever as JsonUriRetriever;
+use \JsonSchema\RefResolver as JsonRefResolver;
+use \JsonSchema\Validator as JsonValidator;
 
 /**
  * Validator
@@ -82,10 +84,10 @@ class Validator
         }
 
         // 載入Schema
-        $retriever = new JsonSchema\Uri\UriRetriever;
+        $retriever = new JsonUriRetriever;
         $schemaObj = $retriever->retrieve("file://{$schemaFile}");
 
-        $refResolver = new JsonSchema\RefResolver($retriever);
+        $refResolver = new JsonRefResolver($retriever);
         $refResolver->resolve($schemaObj, "file://{$schemaPath}/");
 
         return $schemaObj;
@@ -142,7 +144,7 @@ class Validator
     public function validate($data, $schema)
     {
         try {
-            $validator = new JsonSchema\Validator();
+            $validator = new JsonValidator();
 
             $dataObj   = $this->convertData($data);
             $schemaObj = $this->loadSchema($schema);
