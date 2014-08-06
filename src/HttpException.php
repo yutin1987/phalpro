@@ -132,7 +132,7 @@ class HttpException extends PhalconException
             case "PDOException":
             case "Phalcon\Mvc\Model\Transaction\Failed":
                 $result['code']    = self::DATA_PROCESSING_ERROR;
-                $result['message'] = self::errorAry[self::DATA_PROCESSING_ERROR];
+                $result['message'] = self::$errorAry[self::DATA_PROCESSING_ERROR];
                 $result['detail']  = $e->getMessage();
                 break;
             default:
