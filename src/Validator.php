@@ -102,7 +102,7 @@ class Validator
      * @return boolean
      * @throws Exception parameter 不存在或 data 格式錯誤
      */
-    protected function required($data, $parameter)
+    public function required($data, $parameter)
     {
         if (!is_array($parameter)) {
             throw new Exception("parameter must be an array");
