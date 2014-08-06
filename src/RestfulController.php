@@ -75,9 +75,8 @@ class RestfulController extends Controller
             "Content-Type, APPKEY, AUTHORIZATION"
         );
         
-        
-
         $this->setMethods();
+        $this->setContentType();
     }
 
     public function afterExecuteRoute($dispatcher)
