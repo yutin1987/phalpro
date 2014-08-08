@@ -16,6 +16,10 @@ use Phalcon\Db\Column;
 class SoftModel extends Model
 {
 
+    protected $jsonProperty = [];
+
+    protected $enumProperty = [];
+
     /**
      * 取得TimeStamp
      * 
@@ -36,6 +40,68 @@ class SoftModel extends Model
         $this->setSoftDelete();
 
         $this->skipAttributesOnUpdate(array('createTime'));
+    }
+
+    /**
+     * 設定 Json格式 的屬性
+     * 
+     * @param string $property 屬性名稱
+     *
+     * @return void
+     */
+    protected function setJsonProperty($property)
+    {
+        $this->jsonProperty[] = $property;
+    }
+
+    /**
+     * [setEnumProperty description]
+     * 
+     * @param [type] $property [description]
+     * @param [type] $enum     [description]
+     *
+     * @return void
+     */
+    protected function setEnumProperty($property, $enum)
+    {
+        $this->enumProperty[$property] = $enum;
+    }
+    
+    /**
+     * Model afterFetch
+     * 
+     * @return void
+     */
+    public function afterFetch()
+    {
+        // Json Property
+        foreach ($this->jsonProperty as $property) {
+            $this->$property = json_decode($this->$property);
+        }
+
+        // Enum Property
+        foreach ($this->enumProperty as $property => $enum) {
+            $this->$property = $enum[$this->$property];
+        }
+    }
+
+    /**
+     * Model Before Create
+     * 
+     * @return void
+     * @throws ServerException
+     */
+    public function beforeValidation()
+    {
+        // Json Property
+        foreach ($this->jsonProperty as $property) {
+            $this->$property = json_encode($this->$property);
+        }
+
+        // Enum Property
+        foreach ($this->enumProperty as $property => $enum) {
+            $this->$property = array_search($this->$property, $enum);
+        }
     }
 
     /**
