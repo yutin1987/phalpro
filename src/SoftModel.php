@@ -52,6 +52,10 @@ class SoftModel extends Model
     protected function setJsonProperty($property)
     {
         $this->jsonProperty[] = $property;
+
+        if (empty($this->$property)) {
+            $this->$property = new stdClass();
+        }
     }
 
     /**
@@ -86,12 +90,12 @@ class SoftModel extends Model
     }
 
     /**
-     * Model Before Create
+     * Model After Create
      * 
      * @return void
      * @throws ServerException
      */
-    public function beforeValidation()
+    public function afterValidation()
     {
         // Json Property
         foreach ($this->jsonProperty as $property) {
