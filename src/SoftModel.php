@@ -59,10 +59,10 @@ class SoftModel extends Model
     }
 
     /**
-     * [setEnumProperty description]
+     * 設定 Enum格式 的屬性
      * 
-     * @param [type] $property [description]
-     * @param [type] $enum     [description]
+     * @param string $property 屬性名稱
+     * @param array  $enum     參考值
      *
      * @return void
      */
@@ -70,13 +70,13 @@ class SoftModel extends Model
     {
         $this->enumProperty[$property] = $enum;
     }
-    
+
     /**
-     * Model afterFetch
+     * 對屬性解碼
      * 
      * @return void
      */
-    public function afterFetch()
+    protected function decodeProperty()
     {
         // Json Property
         foreach ($this->jsonProperty as $property) {
@@ -90,12 +90,11 @@ class SoftModel extends Model
     }
 
     /**
-     * Model After Create
+     * 對屬性編碼
      * 
      * @return void
-     * @throws ServerException
      */
-    public function afterValidation()
+    protected function encodeProperty()
     {
         // Json Property
         foreach ($this->jsonProperty as $property) {
@@ -106,6 +105,47 @@ class SoftModel extends Model
         foreach ($this->enumProperty as $property => $enum) {
             $this->$property = array_search($this->$property, $enum);
         }
+    }
+    
+    /**
+     * Model afterFetch
+     * 
+     * @return void
+     */
+    public function afterFetch()
+    {
+        $this->decodeProperty();
+    }
+    
+    /**
+     * Model afterSave
+     * 
+     * @return void
+     */
+    public function afterSave()
+    {
+        $this->decodeProperty();
+    }
+
+    /**
+     * Model onValidationFails
+     * 
+     * @return void
+     */
+    public function onValidationFails()
+    {
+        $this->decodeProperty();
+    }
+
+    /**
+     * Model After Create
+     * 
+     * @return void
+     * @throws ServerException
+     */
+    public function beforeValidation()
+    {
+        $this->encodeProperty();
     }
 
     /**
