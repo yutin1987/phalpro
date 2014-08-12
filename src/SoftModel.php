@@ -195,12 +195,10 @@ class SoftModel extends Model
     protected function put(&$target, $data)
     {
         foreach ($data as $key => $value) {
-            if (!is_object($this->$key)) {
-                $target->$key = $value;
-            } elseif (is_object($value)) {
+            if (is_array($value)) {
                 $this->put($target->$key, $value);
             } else {
-                continue;
+                $target->$key = $value;
             }
         }
     }
