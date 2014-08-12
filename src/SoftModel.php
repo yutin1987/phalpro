@@ -213,12 +213,10 @@ class SoftModel extends Model
      */
     public function putIn($data)
     {
-        if (is_object($data)) {
-            $data = get_object_vars($data);
-        }
+        $data = json_decode(json_encode($data), true);
 
-        if (!is_array($data)) {
-            throw new Exception("data must be an object or array");
+        if (empty($data)) {
+            return;
         }
 
         $this->put($this, $data);
