@@ -1,6 +1,8 @@
 <?php
 namespace Phalpro;
 
+use \stdClass;
+
 use Phalcon\Mvc\Model\Behavior\SoftDelete;
 use Phalcon\Mvc\Model\MetaData;
 use Phalcon\Mvc\Model;
