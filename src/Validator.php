@@ -159,16 +159,9 @@ class Validator
                 return true;
             } else {
                 foreach ($validator->getErrors() as $error) {
-                    if ($error['property']) {
-                        $error['message'] = str_replace(
-                            'property ',
-                            "property {$error['property']}.",
-                            $error['message']
-                        );
-                    };
                     array_push(
                         $this->errorMessage,
-                        $error['message']
+                        "{$error['property']} {$error['message']}"
                     );
                 };
                 return false;
@@ -186,7 +179,7 @@ class Validator
      */
     public function getMessage()
     {
-        return implode(',', $this->errorMessage);
+        return implode(';', $this->errorMessage);
     }
 }
 ?>
