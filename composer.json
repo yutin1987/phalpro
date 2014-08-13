@@ -13,7 +13,7 @@
     "require": {
         "php": ">=5.3.6",
         "ext-phalcon": ">=1.2.4,<2",
-        "justinrainbow/json-schema": "*"
+        "yutin1987/json-schema": "*"
     },
     "autoload": {
         "psr-0": {
