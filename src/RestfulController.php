@@ -228,7 +228,11 @@ class RestfulController extends Controller
      */
     protected function getQuery($schema)
     {
-        return $this->validate($_GET, $schema);
+        if ($this->validate($_GET, $schema)) {
+            return $_GET;
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -240,7 +244,11 @@ class RestfulController extends Controller
      */
     protected function getPost($schema)
     {
-        return $this->validate($_POST, $schema);
+        if ($this->validate($_POST, $schema)) {
+            return $_POST;
+        } else {
+            return false;
+        }
     }
 
     /**
