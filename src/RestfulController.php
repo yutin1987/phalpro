@@ -226,7 +226,7 @@ class RestfulController extends Controller
      * 
      * @return mixed
      */
-    protected function getQeury($schema)
+    protected function getQuery($schema)
     {
         return $this->validate($_GET, $schema);
     }
