@@ -87,7 +87,11 @@ class SoftModel extends Model
 
         // Enum Property
         foreach ($this->enumProperty as $property => $enum) {
-            $this->$property = $enum[$this->$property];
+            try {
+                $this->$property = $enum[$this->$property];
+            } catch (Exception $e) {
+                throw new Exception("Error Property {$property}:" . $e->getMessage());
+            }
         }
     }
 
