@@ -80,6 +80,13 @@ class RestfulController extends Controller
         $this->setContentType();
     }
 
+    /**
+     * afterExecuteRoute
+     * 
+     * @param object $dispatcher dispatcher
+     * 
+     * @return void
+     */
     public function afterExecuteRoute($dispatcher)
     {
         // $this->response->send();
@@ -113,15 +120,14 @@ class RestfulController extends Controller
      */
     protected function setContentType($type = null)
     {
-        if (empty($type)) {
-            $this->contentType = 'json';
-        }
+        $this->contentType = $type;
 
         if ($this->contentType == 'xml') {
             $this->response->setContentType("application/xml", "UTF-8");
         } elseif ($this->contentType == 'html') {
             $this->response->setContentType("text/html", "UTF-8");
         } else {
+            $this->contentType = 'json';
             $this->response->setContentType("application/json", "UTF-8");
         }
     }
