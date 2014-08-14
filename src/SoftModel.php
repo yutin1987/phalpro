@@ -33,7 +33,9 @@ class SoftModel extends Model
     {
         $data = parent::find($parameters);
 
-        foreach ($data as &$row) {
+        for ($i = (count($data) - 1); $i >= 0; $i--) {
+            $row = &$data[$i];
+
             foreach (static::$jsonProperty as $property) {
                 if (empty($row->$property)) {
                     $row->$property = new stdClass();
