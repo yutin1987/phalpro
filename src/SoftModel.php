@@ -76,16 +76,16 @@ class SoftModel extends Model
      */
     protected function decodeProperty()
     {
-        echo '123';
-        
         // Json Property
         foreach (self::$jsonProperty as $property) {
-            $this->$property = json_decode($this->$property);
+            $row->$property = json_decode($row->$property);
         }
 
         // Enum Property
-        foreach (self::$enumProperty as $property => $enum) {
-            $this->$property = $enum[$this->$property];
+        foreach (self::$enumProperty as $property) {
+            $enum = $property . 'Enum';
+            var_dump(self::$$enum);
+            $row->$property = self::$$enum[$row->$property];
         }
     }
 
