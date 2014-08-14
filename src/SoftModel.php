@@ -18,34 +18,9 @@ use Phalcon\Db\Column;
 class SoftModel extends Model
 {
 
-    public static $jsonProperty = [];
+    protected $jsonProperty = [];
 
-    public static $enumProperty = [];
-
-    /**
-     * model find
-     * 
-     * @param object $option option
-     * 
-     * @return array
-     */
-    public static function find($option)
-    {
-        $data = parent::find($option);
-
-        foreach ($data as &$row) {
-            foreach (self::$jsonProperty as $property) {
-                $row->$property = json_decode($row->$property);
-            }
-
-            foreach (self::$enumProperty as $property) {
-                $enum = $property . 'Enum';
-                $row->$property = self:$$enum[$row->$property];
-            }
-        }
-
-        return $data;
-    }
+    protected $enumProperty = [];
 
     /**
      * 取得TimeStamp
@@ -70,6 +45,35 @@ class SoftModel extends Model
     }
 
     /**
+     * 設定 Json格式 的屬性
+     * 
+     * @param string $property 屬性名稱
+     *
+     * @return void
+     */
+    protected function setJsonProperty($property)
+    {
+        $this->jsonProperty[] = $property;
+
+        if (empty($this->$property)) {
+            $this->$property = new stdClass();
+        }
+    }
+
+    /**
+     * 設定 Enum格式 的屬性
+     * 
+     * @param string $property 屬性名稱
+     * @param array  $enum     參考值
+     *
+     * @return void
+     */
+    protected function setEnumProperty($property, $enum)
+    {
+        $this->enumProperty[$property] = $enum;
+    }
+
+    /**
      * 對屬性解碼
      * 
      * @return void
@@ -77,13 +81,17 @@ class SoftModel extends Model
     protected function decodeProperty()
     {
         // Json Property
-        foreach (self::$jsonProperty as $property) {
+        foreach ($this->jsonProperty as $property) {
             $this->$property = json_decode($this->$property);
         }
 
         // Enum Property
-        foreach (self::$enumProperty as $property => $enum) {
-            $this->$property = $enum[$this->$property];
+        foreach ($this->enumProperty as $property => $enum) {
+            try {
+                $this->$property = $enum[$this->$property];
+            } catch (Exception $e) {
+                throw new Exception("Error Property {$property}:" . $e->getMessage());
+            }
         }
     }
 
@@ -100,9 +108,8 @@ class SoftModel extends Model
         }
 
         // Enum Property
-        foreach ($this->enumProperty as $property) {
-            $enum = $property . 'Enum';
-            $this->$property = array_search($this->$property, self::$$enum);
+        foreach ($this->enumProperty as $property => $enum) {
+            $this->$property = array_search($this->$property, $enum);
         }
     }
     
