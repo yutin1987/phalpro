@@ -46,7 +46,7 @@ class SoftModel extends Model
 
             foreach (static::$enumProperty as $property) {
                 $enum = &static::${$property . 'Enum'};
-                $row->$property = static::$$enum[$row->$property];
+                $row->$property = $enum[$row->$property];
             }
         }
 
