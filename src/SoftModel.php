@@ -25,7 +25,7 @@ class SoftModel extends Model
     /**
      * model find
      * 
-     * @param object $option option
+     * @param object $parameters parameters
      * 
      * @return array
      */
