@@ -34,13 +34,13 @@ class SoftModel extends Model
         $data = parent::find($parameters);
 
         foreach ($data as &$row) {
-            foreach (self::$jsonProperty as $property) {
+            foreach (static::$jsonProperty as $property) {
                 $row->$property = json_decode($row->$property);
             }
 
-            foreach (self::$enumProperty as $property) {
+            foreach (static::$enumProperty as $property) {
                 $enum = $property . 'Enum';
-                $row->$property = self::$$enum[$row->$property];
+                $row->$property = static::$$enum[$row->$property];
             }
         }
 
@@ -76,17 +76,17 @@ class SoftModel extends Model
      */
     protected function decodeProperty()
     {
-        var_dump(self::$jsonProperty);
+        var_dump(static::$jsonProperty);
         // Json Property
-        foreach (self::$jsonProperty as $property) {
+        foreach (static::$jsonProperty as $property) {
             $row->$property = json_decode($row->$property);
         }
 
         // Enum Property
-        foreach (self::$enumProperty as $property) {
+        foreach (static::$enumProperty as $property) {
             $enum = $property . 'Enum';
-            var_dump(self::$$enum);
-            $row->$property = self::$$enum[$row->$property];
+            var_dump(static::$$enum);
+            $row->$property = static::$$enum[$row->$property];
         }
     }
 
@@ -98,12 +98,12 @@ class SoftModel extends Model
     protected function encodeProperty()
     {
         // Json Property
-        foreach (self::$jsonProperty as $property) {
+        foreach (static::$jsonProperty as $property) {
             $this->$property = json_encode($this->$property);
         }
 
         // Enum Property
-        foreach (self::$enumProperty as $property) {
+        foreach (static::$enumProperty as $property) {
             $enum = $property . 'Enum';
             $this->$property = array_search($this->$property, self::$$enum);
         }
