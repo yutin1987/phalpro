@@ -33,23 +33,22 @@ class SoftModel extends Model
     {
         $data = parent::find($parameters);
 
-        var_dump($data);
         for ($i = (count($data) - 1); $i >= 0; $i--) {
             $row = &$data[$i];
-            var_dump($row);
+            echo $row->balanceType . PHP_EOL;
 
-            foreach (static::$jsonProperty as $property) {
-                if (empty($row->$property)) {
-                    $row->$property = new stdClass();
-                } else {
-                    $row->$property = json_decode($row->$property);
-                }
-            }
+            // foreach (static::$jsonProperty as $property) {
+            //     if (empty($row->$property)) {
+            //         $row->$property = new stdClass();
+            //     } else {
+            //         $row->$property = json_decode($row->$property);
+            //     }
+            // }
 
-            foreach (static::$enumProperty as $property) {
-                $enum = &static::${$property . 'Enum'};
-                $row->$property = $enum[$row->$property];
-            }
+            // foreach (static::$enumProperty as $property) {
+            //     $enum = &static::${$property . 'Enum'};
+            //     $row->$property = $enum[$row->$property];
+            // }
         }
 
         return $data;
