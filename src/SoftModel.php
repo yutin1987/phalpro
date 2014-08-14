@@ -40,7 +40,7 @@ class SoftModel extends Model
 
             foreach (self::$enumProperty as $property) {
                 $enum = $property . 'Enum';
-                $row->$property = self:$$enum[$row->$property];
+                $row->$property = self::$$enum[$row->$property];
             }
         }
 
