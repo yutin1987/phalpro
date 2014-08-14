@@ -202,10 +202,9 @@ class SoftModel extends Model
     {
         foreach ($data as $key => $value) {
             if (is_array($value)) {
+                $target->$key = new stdClass();
                 $this->put($target->$key, $value);
             } else {
-                var_dump($target);
-                var_dump($key);
                 $target->$key = $value;
             }
         }
