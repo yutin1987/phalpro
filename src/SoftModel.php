@@ -76,6 +76,8 @@ class SoftModel extends Model
      */
     protected function decodeProperty()
     {
+        echo '123';
+        
         // Json Property
         foreach (self::$jsonProperty as $property) {
             $this->$property = json_decode($this->$property);
