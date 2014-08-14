@@ -84,7 +84,6 @@ class SoftModel extends Model
         // Enum Property
         foreach (self::$enumProperty as $property) {
             $enum = $property . 'Enum';
-            var_dump(self::$$enum);
             $row->$property = self::$$enum[$row->$property];
         }
     }
@@ -97,12 +96,12 @@ class SoftModel extends Model
     protected function encodeProperty()
     {
         // Json Property
-        foreach ($this->jsonProperty as $property) {
+        foreach (self::$jsonProperty as $property) {
             $this->$property = json_encode($this->$property);
         }
 
         // Enum Property
-        foreach ($this->enumProperty as $property) {
+        foreach (self::$enumProperty as $property) {
             $enum = $property . 'Enum';
             $this->$property = array_search($this->$property, self::$$enum);
         }
