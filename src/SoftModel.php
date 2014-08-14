@@ -18,9 +18,9 @@ use Phalcon\Db\Column;
 class SoftModel extends Model
 {
 
-    protected static $jsonProperty = [];
+    public static $jsonProperty = [];
 
-    protected static $enumProperty = [];
+    public static $enumProperty = [];
 
     /**
      * model find
