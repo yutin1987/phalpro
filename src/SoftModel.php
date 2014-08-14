@@ -35,7 +35,11 @@ class SoftModel extends Model
 
         foreach ($data as &$row) {
             foreach (static::$jsonProperty as $property) {
-                $row->$property = json_decode($row->$property);
+                if ($row->$property) {
+                    $row->$property = new stdClass();
+                } else {
+                    $row->$property = json_decode($row->$property);
+                }
             }
 
             foreach (static::$enumProperty as $property) {
@@ -76,17 +80,19 @@ class SoftModel extends Model
      */
     protected function decodeProperty()
     {
-        var_dump(static::$jsonProperty);
         // Json Property
         foreach (static::$jsonProperty as $property) {
-            $row->$property = json_decode($row->$property);
+            if ($this->$property) {
+                $this->$property = new stdClass();
+            } else {
+                $this->$property = json_decode($this->$property);
+            }
         }
 
         // Enum Property
         foreach (static::$enumProperty as $property) {
             $enum = $property . 'Enum';
-            var_dump(static::$$enum);
-            $row->$property = static::$$enum[$row->$property];
+            $this->$property = static::$$enum[$this->$property];
         }
     }
 
