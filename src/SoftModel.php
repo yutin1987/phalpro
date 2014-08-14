@@ -33,8 +33,10 @@ class SoftModel extends Model
     {
         $data = parent::find($parameters);
 
+        var_dump($data);
         for ($i = (count($data) - 1); $i >= 0; $i--) {
             $row = &$data[$i];
+            var_dump($row);
 
             foreach (static::$jsonProperty as $property) {
                 if (empty($row->$property)) {
