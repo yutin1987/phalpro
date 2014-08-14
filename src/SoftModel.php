@@ -192,7 +192,10 @@ class SoftModel extends Model
     {
         foreach ($data as $key => $value) {
             if (is_array($value)) {
-                $target->$key = new stdClass();
+                if (empty($target->$key)) {
+                    $target->$key = new stdClass();
+                }
+                
                 $this->put($target->$key, $value);
             } else {
                 $target->$key = $value;
