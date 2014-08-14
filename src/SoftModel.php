@@ -204,6 +204,8 @@ class SoftModel extends Model
             if (is_array($value)) {
                 $this->put($target->$key, $value);
             } else {
+                var_dump($target);
+                var_dump($key);
                 $target->$key = $value;
             }
         }
