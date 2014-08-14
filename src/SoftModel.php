@@ -18,9 +18,33 @@ use Phalcon\Db\Column;
 class SoftModel extends Model
 {
 
-    protected $jsonProperty = [];
+    protected static $jsonProperty = [];
 
-    protected $enumProperty = [];
+    protected static $enumProperty = [];
+
+    /**
+     * model find
+     * 
+     * @param object $option option
+     * 
+     * @return array
+     */
+    public static function find($option)
+    {
+        $data = parent::find($option);
+
+        foreach ($data as &$row) {
+            foreach (self::$jsonProperty as $property) {
+                $row->$property = json_decode($row->$property);
+            }
+
+            foreach (self::$enumProperty as $property => $enum) {
+                $row->$property = $enum[$row->$property];
+            }
+        }
+
+        return $data;
+    }
 
     /**
      * 取得TimeStamp
@@ -45,35 +69,6 @@ class SoftModel extends Model
     }
 
     /**
-     * 設定 Json格式 的屬性
-     * 
-     * @param string $property 屬性名稱
-     *
-     * @return void
-     */
-    protected function setJsonProperty($property)
-    {
-        $this->jsonProperty[] = $property;
-
-        if (empty($this->$property)) {
-            $this->$property = new stdClass();
-        }
-    }
-
-    /**
-     * 設定 Enum格式 的屬性
-     * 
-     * @param string $property 屬性名稱
-     * @param array  $enum     參考值
-     *
-     * @return void
-     */
-    protected function setEnumProperty($property, $enum)
-    {
-        $this->enumProperty[$property] = $enum;
-    }
-
-    /**
      * 對屬性解碼
      * 
      * @return void
@@ -81,17 +76,13 @@ class SoftModel extends Model
     protected function decodeProperty()
     {
         // Json Property
-        foreach ($this->jsonProperty as $property) {
+        foreach (self::$jsonProperty as $property) {
             $this->$property = json_decode($this->$property);
         }
 
         // Enum Property
-        foreach ($this->enumProperty as $property => $enum) {
-            try {
-                $this->$property = $enum[$this->$property];
-            } catch (Exception $e) {
-                throw new Exception("Error Property {$property}:" . $e->getMessage());
-            }
+        foreach (self::$enumProperty as $property => $enum) {
+            $this->$property = $enum[$this->$property];
         }
     }
 
