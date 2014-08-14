@@ -92,6 +92,8 @@ class SoftModel extends Model
         // Enum Property
         foreach (static::$enumProperty as $property) {
             $enum = $property . 'Enum';
+            var_dump($enum);
+            var_dump(static::$$enum);
             $this->$property = static::$$enum[$this->$property];
         }
     }
