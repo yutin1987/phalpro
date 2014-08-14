@@ -35,7 +35,7 @@ class SoftModel extends Model
 
         foreach ($data as &$row) {
             foreach (static::$jsonProperty as $property) {
-                if ($row->$property) {
+                if (empty($row->$property)) {
                     $row->$property = new stdClass();
                 } else {
                     $row->$property = json_decode($row->$property);
@@ -82,7 +82,7 @@ class SoftModel extends Model
     {
         // Json Property
         foreach (static::$jsonProperty as $property) {
-            if ($this->$property) {
+            if (empty($this->$property)) {
                 $this->$property = new stdClass();
             } else {
                 $this->$property = json_decode($this->$property);
