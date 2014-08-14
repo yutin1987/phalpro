@@ -43,7 +43,7 @@ class SoftModel extends Model
             }
 
             foreach (static::$enumProperty as $property) {
-                $enum = $property . 'Enum';
+                $enum = &static::${$property . 'Enum'};
                 $row->$property = static::$$enum[$row->$property];
             }
         }
@@ -92,7 +92,6 @@ class SoftModel extends Model
         // Enum Property
         foreach (static::$enumProperty as $property) {
             $enum = &static::${$property . 'Enum'};
-            var_dump($enum);
             $this->$property = $enum[$this->$property];
         }
     }
