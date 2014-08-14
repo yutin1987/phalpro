@@ -31,24 +31,11 @@ class SoftModel extends Model
      */
     public static function find($parameters = null)
     {
-        $data = parent::find($parameters);
+        $data = [];
+        $temp = parent::find($parameters);
 
-        for ($i = (count($data) - 1); $i >= 0; $i--) {
-            $row = &$data[$i];
-            echo $row->balanceType . PHP_EOL;
-
-            // foreach (static::$jsonProperty as $property) {
-            //     if (empty($row->$property)) {
-            //         $row->$property = new stdClass();
-            //     } else {
-            //         $row->$property = json_decode($row->$property);
-            //     }
-            // }
-
-            // foreach (static::$enumProperty as $property) {
-            //     $enum = &static::${$property . 'Enum'};
-            //     $row->$property = $enum[$row->$property];
-            // }
+        foreach ($temp as $row) {
+            $data[] = $row;
         }
 
         return $data;
