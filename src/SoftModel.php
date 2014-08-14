@@ -29,9 +29,9 @@ class SoftModel extends Model
      * 
      * @return array
      */
-    public static function find($option)
+    public static function find($parameters = null)
     {
-        $data = parent::find($option);
+        $data = parent::find($parameters);
 
         foreach ($data as &$row) {
             foreach (self::$jsonProperty as $property) {
