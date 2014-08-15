@@ -149,7 +149,7 @@ class Validator
                 case 'object':
                     $temp->$key = $this->convertType(
                         $data->$key,
-                        $properties->properties
+                        $value->properties
                     );
                     break;
                 case 'integer':
