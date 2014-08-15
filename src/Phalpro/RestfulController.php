@@ -236,11 +236,7 @@ class RestfulController extends Controller
     {
         $get = json_decode(json_encode($_GET));
 
-        if ($this->validate($get, $schema)) {
-            return $get;
-        } else {
-            return false;
-        }
+        return $this->validate($get, $schema);
     }
 
     /**
@@ -254,11 +250,7 @@ class RestfulController extends Controller
     {
         $post = json_decode(json_encode($_POST));
 
-        if ($this->validate($post, $schema)) {
-            return $post;
-        } else {
-            return false;
-        }
+        return $this->validate($post, $schema);
     }
 
     /**
@@ -271,14 +263,13 @@ class RestfulController extends Controller
     protected function getJsonRawBody($schema)
     {
         $rawBody = $this->request->getJsonRawBody();
+
         if (empty($rawBody)) {
             array_push($this->errorMessage, 'Not found raw body');
             return false;
-        } elseif ($this->validate($rawBody, $schema)) {
-            return $rawBody;
-        } else {
-            return false;
         }
+
+        return $this->validate($rawBody, $schema);
     }
 
     /**
@@ -291,17 +282,15 @@ class RestfulController extends Controller
     protected function getQueryRawBody($schema)
     {
         $rawBody = $this->request->getRawBody();
+        
         if (empty($rawBody)) {
             array_push($this->errorMessage, 'Not found raw body');
             return false;
-        } else {
-            parse_str($rawBody, $data);
-            if ($this->validate($data, $schema)) {
-                return $data;
-            } else {
-                return false;
-            }
         }
+
+        parse_str($rawBody, $data);
+        
+        return $this->validate($data, $schema);
     }
 
     /**
