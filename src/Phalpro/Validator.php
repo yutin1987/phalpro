@@ -143,6 +143,8 @@ class Validator
      */
     public function convertType($data, $properties)
     {
+        var_dump($properties);
+        
         $temp = new stdClass();
         foreach ($properties as $key => $value) {
             switch ($value->type) {
