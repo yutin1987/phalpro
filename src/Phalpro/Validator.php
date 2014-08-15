@@ -145,6 +145,10 @@ class Validator
     {
         $temp = new stdClass();
         foreach ($properties as $key => $value) {
+            if (empty($data->$key)) {
+                continue;
+            }
+
             switch ($value->type) {
                 case 'object':
                     $temp->$key = $this->convertType(
