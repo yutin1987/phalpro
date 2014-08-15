@@ -1,6 +1,7 @@
 <?php
-
 namespace Phalpro;
+
+use \stdClass;
 
 use \JsonSchema\Uri\UriRetriever as JsonUriRetriever;
 use \JsonSchema\RefResolver as JsonRefResolver;
@@ -135,10 +136,41 @@ class Validator
     /**
      * 驗證Data
      *
+     * @param mixed  $data       data
+     * @param string $properties properties
+     *
+     * @return object
+     */
+    public function convertType($data, $properties)
+    {
+        $temp = new stdClass();
+        foreach ($properties as $key => $value) {
+            switch ($value->type) {
+                case 'object':
+                    $temp->$key = $this->convertType(
+                        $data->$key,
+                        $data->properties
+                    );
+                    break;
+                case 'integer':
+                    $temp->$key = intval($data->$key);
+                    break;
+                default:
+                    $temp->$key = $data->$key;
+                    break;
+            }
+        }
+
+        return $temp;
+    }
+
+    /**
+     * 驗證Data
+     *
      * @param mixed  $data   data
      * @param string $schema schema
      *
-     * @return boolean
+     * @return mixed
      * @throws Exception schma 不存在或不正確, 或 data 格式錯誤
      */
     public function validate($data, $schema)
@@ -148,17 +180,20 @@ class Validator
 
             $dataObj   = $this->convertData($data);
             $schemaObj = $this->loadSchema($schema);
-            
+
             if (false == $schemaObj) {
                 return true;
             }
 
-            var_dump($schemaObj);
+            $dataObj = $this->convertType(
+                $dataObj,
+                $schemaObj->properties
+            );
 
             $validator->check($dataObj, $schemaObj);
 
             if ($validator->isValid()) {
-                return true;
+                return $dataObj;
             } else {
                 foreach ($validator->getErrors() as $error) {
                     array_push(
