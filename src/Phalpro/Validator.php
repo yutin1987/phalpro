@@ -153,6 +153,8 @@ class Validator
                 return true;
             }
 
+            var_dump($schemaObj);
+
             $validator->check($dataObj, $schemaObj);
 
             if ($validator->isValid()) {
