@@ -8,12 +8,17 @@
         {
             "name": "YuTin",
             "email": "yuting1987@gmail.com"
+        },
+        {
+            "type": "git",
+            "url": "git@github.com:yutin1987/phelp.git"
         }
     ],
     "require": {
         "php": ">=5.3.6",
         "ext-phalcon": ">=1.2.4,<2",
-        "justinrainbow/json-schema": "*"
+        "justinrainbow/json-schema": "*",
+        "yutin1987/phelp": "dev-master"
     },
     "autoload": {
         "psr-0": {
