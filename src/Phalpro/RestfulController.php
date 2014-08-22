@@ -157,25 +157,14 @@ class RestfulController extends Controller
     protected function resSuccess($data = null, $httpCode = 200)
     {
         if ($this->contentType == 'xml') {
-            $xmlObj = new SimpleXMLElement(
-                '<?xml version="1.0" encoding="UTF-8" ?>'
-            );
-
-            foreach ($data as $key => $value) {
-                if (is_array($value)) {
-                    if (!is_numeric($key)) {
-                        $subnode = $xmlObj->addChild($key);
-                        self::array2xml($value, $subnode);
-                    } else {
-                        self::array2xml($value, $xmlObj);
-                    }
-                } else {
-                    $xmlObj->addChild($key, $value);
-                }
+            if (is_object($data)) {
+                $data = (array) $data;
             }
 
+            $root = key($data);
+
             $this->response->setContent(
-                $xmlObj->asXML()
+                XML::obj2xml($data[$root], $root)
             );
         } elseif ($this->contentType == 'html') {
             $this->response->setContent(
