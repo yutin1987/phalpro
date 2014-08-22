@@ -6,6 +6,8 @@ use \Phalcon\Mvc\Controller;
 use \Phalpro\Validator;
 use \Phalpro\Page;
 
+use \Phelp\XML;
+
 /**
  * Restful Controller
  *
@@ -270,6 +272,25 @@ class RestfulController extends Controller
         }
 
         return $this->validate($rawBody, $schema);
+    }
+
+    /**
+     * Get Request From RawBody For XML
+     * 
+     * @param string $schema XML schema
+     * 
+     * @return mixed
+     */
+    protected function getXMLRawBody($schema)
+    {
+        $rawBody = $this->request->getRawBody();
+
+        if (empty($rawBody)) {
+            array_push($this->errorMessage, 'Not found raw body');
+            return false;
+        }
+
+        return XML::xml2obj($rawBody);
     }
 
     /**
