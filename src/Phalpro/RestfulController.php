@@ -160,7 +160,7 @@ class RestfulController extends Controller
             if (is_object($data)) {
                 $data = (array) $data;
             }
-
+            
             $root = key($data);
 
             $this->response->setContent(

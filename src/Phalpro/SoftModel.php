@@ -48,7 +48,7 @@ class SoftModel extends Model
      */
     public static function getTimeStamp()
     {
-        return date("Y-m-d H:i:s", time("now"));
+        return DateTime::format(DATE_ISO8601);
     }
     
     /**
