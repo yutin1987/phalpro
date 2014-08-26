@@ -49,7 +49,8 @@ class SoftModel extends Model
      */
     public static function getTimeStamp()
     {
-        return DateTime::format(DATE_ISO8601);
+        $date = new DateTime();
+        return $date->format(DATE_ISO8601);
     }
     
     /**
