@@ -2,6 +2,7 @@
 namespace Phalpro;
 
 use \stdClass;
+use \DateTime;
 
 use Phalcon\Mvc\Model\Behavior\SoftDelete;
 use Phalcon\Mvc\Model\MetaData;
